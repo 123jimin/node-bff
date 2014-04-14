@@ -1,8 +1,18 @@
 {
 	"name": "bf-framework",
-	"description": "A collection of tools related to BrainFuck coding",
-	"readme": "README.md",
 	"version": "0.0.0",
+	"description": "A collection of tools related to BrainFuck coding",
+	"keywords": [
+		"brainfuck",
+		"bf"
+	],
+	"license": "WTFPL",
+	"readme": "README.md",
 	"private": true,
-	"license": "WTFPL"
+	"scripts": {
+		"test": "node ./test.js"
+	},
+	"devDependencies": {
+		"mocha": "^1.18.2"
+	}
 }
