@@ -1,0 +1,8 @@
+{
+	"name": "bf-framework",
+	"description": "A collection of tools related to BrainFuck coding",
+	"readme": "README.md",
+	"version": "0.0.0",
+	"private": true,
+	"license": "WTFPL"
+}
