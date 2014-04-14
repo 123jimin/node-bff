@@ -1,4 +1,4 @@
 node-bff
 ========
 
-BrainFuckFramework - BA ("BF Assembly") to BrainFuck compiler, interpreter, and debugger
+*node-bff* (BrainFuckFramework) is a collection of tools related to BrainFuck coding.
