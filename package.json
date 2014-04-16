@@ -6,11 +6,16 @@
 		"brainfuck",
 		"bf"
 	],
+	"main": "./lib/bff.js",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/123jimin/node-bff.git"
+	},
 	"license": "WTFPL",
 	"readme": "README.md",
 	"private": true,
 	"scripts": {
-		"test": "node ./test.js"
+		"test": "./node_modules/mocha/bin/mocha --reporter nyan"
 	},
 	"devDependencies": {
 		"mocha": "^1.18.2"
