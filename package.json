@@ -15,7 +15,7 @@
 	"readme": "README.md",
 	"private": true,
 	"scripts": {
-		"test": "./node_modules/mocha/bin/mocha --reporter nyan"
+		"test": "./node_modules/mocha/bin/mocha -R spec"
 	},
 	"devDependencies": {
 		"mocha": "^1.18.2"
