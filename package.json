@@ -7,6 +7,9 @@
 		"bf"
 	],
 	"main": "./lib/bff.js",
+	"bin": {
+		"bffr": "./bin/bffr.js"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/123jimin/node-bff.git"
@@ -16,6 +19,9 @@
 	"private": true,
 	"scripts": {
 		"test": "./node_modules/mocha/bin/mocha -R spec"
+	},
+	"dependencies": {
+		"yargs": "^1.2.1"
 	},
 	"devDependencies": {
 		"async": "^0.7.0",

@@ -1,0 +1,11 @@
+in A
+sub A '0'
+in B
+sub B '0'
+sub C A B
+add C '0'
+if lt C '0'
+	out '-'
+	sub C 96 C
+end if
+out C
