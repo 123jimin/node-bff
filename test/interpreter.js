@@ -143,6 +143,20 @@ describe('BInterp', function(){
 					done();
 				});
 			});
+			it("should calculate 6*9 correctly", function(done){
+				(new BInterp()).execute(BFF.parse("++++++[->+++++++++<]>"), function(err, arr, arr_ptr){
+					if(err){
+						done(err); return;
+					}
+					try{
+						assert.equal(arr_ptr, 1);
+						assert.equal(arr[arr_ptr], 6*9);
+					}catch(e){
+						done(e); return;
+					}
+					done();
+				});
+			});
 		});
 		describe('print', function(){
 			it("should print all 256 characters correctly", function(done){
