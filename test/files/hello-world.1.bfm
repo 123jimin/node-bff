@@ -1,0 +1,9 @@
+print(V) = set(0,V) .;
+print2(V1, V2) = print(V1) print(V2);
+print2('H', 'e')
+print2('l', 'l')
+print2('o', ',')
+print2(' ', 'w')
+print2('o', 'r')
+print2('l', 'd')
+print2('!', '\n')
