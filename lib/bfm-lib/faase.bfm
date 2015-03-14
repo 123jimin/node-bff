@@ -1,0 +1,188 @@
+! From http://www.cs.tufts.edu/~couch/bfmacro/bfmacro/
+! builtins
+
+! to(X)
+! preconditions:  X is a non-negative integer; 
+!                 no unbalanced loops encountered in the code so far, 
+!                 or at(X) used after last unbalanced loop to anchor pointer. 
+! postconditions: data pointer points to X 
+! notes: Interpreter does not allow use of to(X) after an unbalanced loop
+!        (e.g., [<]) unless there is an at(X) statement between the loop
+!        and the to(X) in lexical scope. 
+
+! at(X)
+! preconditions:  X is a non-negative integer. 
+! postconditions: presumes that data pointer is currently X, even if it is not, 
+!                 for purposes of to(X). Essentially an 'origin' statement. 
+! notes: One can use this to 'lie' about the data pointer, for the purposes of 
+!        choosing a new 'origin' (0) for data. 
+
+! plus(X)
+! preconditions:  X is a non-negative integer. 
+! postconditions: X +'s are appended to code. 
+! notes: One can use ascii by enclosing in '', e.g. 'A'. 
+!        One program for printing "hi" is 
+!        zero(X) plus('h') . zero(X) plus('i') .
+
+! minus(X)
+! preconditions: X is a non-negative integer. 
+! postconditions: X -'s are appended to the code. 
+
+! left(X)
+! preconditions: X is a non-negative integer. 
+! postconditions: X <'s are appended to the code. 
+! notes: tracks location; does not interfere with use of to(X)
+
+! right(X)
+! preconditions: X is a non-negative integer. 
+! postconditions: X >'s are appended to the code. 
+! notes: tracks location; does not interfere with use of to(X)
+
+! number constructors
+
+zero(X)  = to(X)[-] ; 
+! preconditions:  X is a non-negative integer. 
+! postconditions: pointer at X, data[X] is 0. 
+
+one(X)   = to(X)[-]+ ; 
+! preconditions:  X is a non-negative integer. 
+! postconditions: pointer at X, data[X] is 1. 
+
+inc(X)   = to(X)+ ; 
+! preconditions:  X is a non-negative integer. 
+! postconditions: pointer at X, data[X] is 1 greater than before. 
+
+dec(X)   = to(X)- ; 
+! preconditions:  X is a non-negative integer. 
+! postconditions: pointer at X, data[X] is 1 less than before. 
+
+set(X,Y) = zero(X) plus(Y) ; 
+! preconditions:  X,Y are non-negative integers. 
+! postconditions: pointer at X, data[X] is Y%256
+
+! simple iteration 
+for(X)   = to(X)[ ;
+next(X)  = to(X)-] ; 
+! usage: for(X) ...text... next(X)
+! preconditions:  X is a non-negative integer. 
+! postconditions: text is executed for decreasing values of X, not 
+!                 including 0. 
+
+! while 
+while(X) = to(X)[ ;
+wend(X)  = to(X)] ;
+! usage: while(X) ...text... wend(X)
+! preconditions:  X is a non-negative integer. 
+! postconditions: text is executed while X remains non-zero. 
+
+! moving and copying 
+move(X,Y)      = for(X) to(Y) + next(X) ;
+! preconditions:  X and Y are non-negative integers. 
+! postconditions: data[Y]+=data[X]; data[X]=0.
+! note: when unambiguous, I will identify each variable X with 
+! a data location, writing Y+=X; X=0 instead of the above. 
+
+move2(X,Y,Z)   = for(X) to(Y) + to(Z) + next(X) ; 
+! preconditions:  X,Y,Z are non-negative integers. 
+! postconditions: Y+=X; Z+=X; X=0; 
+
+copy(S,D,T)    = move2(S,D,T) move(T,S) ;
+! preconditions:  S,D,T are non-negative integers. 
+! postconditions: D+=S; S+=T; T=0; 
+
+! if-endif
+if(X)          = to(X)[ ; 
+endif(X)       = zero(X)] ; 
+! usage: if(X) ...text... endif(X)
+! preconditions:  X is non-negative integer
+! postconditions: text between if and endif are executed if X != 0; X=0.
+
+! if-then-else 
+ifelse(X,T)    = one(T) if(X) zero(T) ; 
+else(X,T)      = endif(X) if(T) ;
+endifelse(X,T) = endif(T) to(X) ;
+! usage: ifelse(X,T) ...text1... else(X,T) ...text2... endifelse(X,T)
+! preconditions:  X is non-negative integer, text1 does not change T
+! postconditions: if X is nonzero, text1 is executed, else text2 is executed.
+!                 X=0, T=0
+
+! logic 
+tobool(S,D)    = zero(D) if(S) one(D) endif(S) ;
+! preconditions: S and D are non-negative integers. 
+! postconditions D=bool(S), 1 if S>0, 0 if S==0. 
+! notes: consistently, I have erred on the side of simplicity; 
+!        boolean functions are 1 and 0, as in C. 
+
+not(S,D)       = one(D) if(S) zero(D) endif(S) ;
+! preconditions:  S and D are non-negative integers. 
+! postconditions: D=!S, 1 if S==0, 0 if S>0. 
+
+or(S1,S2,D)    = zero(D) if(S1) one(D) endif(S1) if(S2) one(D) endif(S2) ; 
+! preconditions:  S1,S2,S are non-negative integers 
+! postconditions: D=S1 || S2; 0 if both are 0, 1 if either is nonzero. 
+!                 S1=0, S2=0, d=S2.
+
+and(S1,S2,D)   = zero(D) if(S1) tobool(S2,D) endif(S1) zero(S2) ; 
+! preconditions:  S1,S2,S are non-negative integers 
+! postconditions: D=S1 && S2; 0 if either is 0, 1 if both are nonzero. 
+!                 S1=0, S2=0, d=S2
+
+! comparison 
+subtractMinimum(X1,X2,T1,T2,T3) =
+  zero(T3) copy(X1,T1,T3) copy(X2,T2,T3) and(T1,T2,T3) to(T3)
+  [ dec(X1) dec(X2)
+    zero(T3) copy(X1,T1,T3) copy(X2,T2,T3) and(T1,T2,T3) to(T3)
+  ] ;
+! preconditions:  X1,X2,T1,T2,T3 are non-negative integers. 
+!                 T1,T2 are 0. 
+! postconditions: if X1>X2 then X1=X1-X2, X2=0, T1=T2=T3=0 
+!                 if X1<X2 then X1=0, X2=X2-X1, T1=T2=T3=0 
+!                 if X1==X2 then X1=X2=T1=T2=T3=0 
+
+notEqual(x1,x2,d,t1,t2) = subtractMinimum(x1,x2,d,t1,t2) or(x1,x2,d); 
+! preconditions:  x1,x2,d,t1,t2 are non-negative integers 
+! postconditions: d=(x1!=x2); x1=x2=t1=t2=0
+
+Equal(x1,x2,d,t1,t2) = notEqual(x1,x2,t1,d,t2) not(t1,d); 
+! preconditions:  x1,x2,d,t1,t2 are non-negative integers 
+! postconditions: d=(x1==x2); x1=x2=t1=t2=0
+
+Greater(x1,x2,d,t1,t2) = subtractMinimum(x1,x2,d,t1,t2) zero(x2) move(x1,d); 
+! preconditions:  x1,x2,d,t1,t2 are non-negative integers 
+! postconditions: d=(x1>x2); x1=x2=t1=t2=0
+
+Less(x1,x2,d,t1,t2) = subtractMinimum(x1,x2,d,t1,t2) zero(x1) move(x2,d); 
+! preconditions:  x1,x2,d,t1,t2 are non-negative integers 
+! postconditions: d=(x1<x2); x1=x2=t1=t2=0
+
+GreaterOrEqual(x1,x2,d,t1,t2) = inc(x1) Greater(x1,x2,d,t1,t2); 
+! preconditions:  x1,x2,d,t1,t2 are non-negative integers 
+! postconditions: d=(x1>=x2); x1=x2=t1=t2=0
+
+LessOrEqual(x1,x2,d,t1,t2) = inc(x2) Less(x1,x2,d,t1,t2); 
+! preconditions:  x1,x2,d,t1,t2 are non-negative integers 
+! postconditions: d=(x1<=x2); x1=x2=t1=t2=0
+
+! multiplication 
+times(s1,s2,d,t) = for(s1) copy(s2,d,t) next(s1) zero(s2); 
+! preconditions:  s1,s2,d,t are non-negative integers 
+! postconditions: d=s1*s2; s1=s2=t=0
+
+! powers 
+power(x,p,d,t1,t2) =
+  to(d) +
+  for(p)
+    times(x,d,t1,t2)
+    move(t1,d)
+  next(p)
+  zero(x); 
+! preconditions: x,p,d,t1,t2 are non-negative integers 
+! postconditions: d=x^p, x=p=t1=t2=0 
+
+double(S,D) = move2(S,D,D); 
+! preconditions: S,D are non-negative integers 
+! postconditions: D+=S*S, S=0
+
+! I/O
+input(X) = to(X) , ; 
+output(X) = to(X) . ; 
