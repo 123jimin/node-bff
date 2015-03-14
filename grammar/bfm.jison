@@ -19,7 +19,6 @@
 %%
 
 ("!"|"#")([^\n]+) /* skip comments */
-(" "|\r|\n|\t)+ /* skip whitespaces */
 
 "0x"[0-9]+  return "NUMBER";
 
@@ -27,6 +26,8 @@
 [A-Za-z_][A-Za-z0-9_]*  return "IDENTIFIER";
 "'"."'" return "CHARACTER";
 "'\\"."'" return "CHARACTER";
+
+(" "|\r|\n|\t)+ /* skip whitespaces */
 
 "=" return "=";
 "(" return "(";
@@ -62,7 +63,7 @@ statement
 
 operation
 	: macro {$$ = $1;}
-	| opcode {$$ = ['opcode', $1];}
+	| opcodes {$$ = ['opcode', $1];}
 	;
 
 macro
@@ -94,6 +95,11 @@ define
 stream
 	: operation stream {$$ = [$1].concat($2);}
 	| operation {$$ = [$1];}
+	;
+
+opcodes
+	: opcode opcodes {$$ = $1+$2;}
+	| opcode {$$ = $1;}
 	;
 
 opcode
