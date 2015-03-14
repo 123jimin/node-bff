@@ -1,0 +1,35 @@
+! divide Numerator by Denominator, 
+! produce Quotient and Remainder; 
+! use and zero temporaries T1,T2,T3
+divide(Numerator,Denominator,Quotient,Remainder,T1,T2,T3) = 
+  zero(Quotient) zero(Remainder) 
+  ! main loop: repeatedly subtract one from Remainder=Denominator  
+  ! and Numerator until one is 0; stop when Numerator is 0
+  copy(Denominator,Remainder,T1) 
+  subtractMinimum(Numerator,Remainder,T1,T2,T3) 
+  ! until nothing left in Numerator
+  while(Numerator) 
+    ! add one to Quotient 
+    inc(Quotient)  
+    ! try again to subtract Denominator from Numerator
+    copy(Denominator,Remainder,T1) 
+    subtractMinimum(Numerator,Remainder,T1,T2,T3) 
+  wend(Numerator)
+  ! at this point, there are two states 
+  !  Remainder!=0: Quotient is ok, Remainder=Denominator-Remainder
+  !  Remainder==0: need Quotient++, one extra increment.
+  copy(Remainder,T1,T2) 
+  ifelse(T1,T2) ! remainder nonzero
+    for(Remainder) dec(Denominator) next(Remainder) 
+    move(Denominator,Remainder) 
+  else(T1,T2) 
+    inc(Quotient)
+    zero(Denominator) 
+  endifelse(T1,T2) ; 
+
+mod(Number,Modulus,Result,T1,T2,T3,T4) =
+  divide(Number,Modulus,T1,Result,T2,T3,T4) 
+  zero(T1) ;
+
+X=0; Y=1; result=2; remainder=3; 
+set(X,47) set(Y,9) divide(X,Y,result,remainder,T1,T2,T3)
