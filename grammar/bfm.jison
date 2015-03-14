@@ -12,11 +12,15 @@
 			default:
 				return c.charCodeAt(0);
 		}
+	}, _proc_include = function _proc_include(s){
+		return s.match(/<([^>]+)>/)[1];
 	};
 %}
 
 %lex
 %%
+
+("!"|"#")"include"(" "|\t)*"<"([^>]+)">" return "INCLUDE";
 
 ("!"|"#")([^\n]+) /* skip comments */
 
@@ -48,7 +52,13 @@
 %%
 
 program
-	: statements {return $1;}
+	: includes statements {return [$1, $2];}
+	| statements {return [[], $1];}
+	;
+
+includes
+	: INCLUDE includes {$$ = [_proc_include($1)].concat($2);}
+	| INCLUDE {$$ = [_proc_include($1)];}
 	;
 
 statements

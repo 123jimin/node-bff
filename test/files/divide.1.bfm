@@ -1,3 +1,5 @@
+#include <faase>
+
 ! divide Numerator by Denominator, 
 ! produce Quotient and Remainder; 
 ! use and zero temporaries T1,T2,T3
