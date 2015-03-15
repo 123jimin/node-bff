@@ -57,12 +57,18 @@ describe('BIR', function(){
 
 describe('BInterp', function(){
 	this.timeout(10);
-	var _exec_out_tester = function execute_output_tester(src, output, callback){
+	var _exec_out_tester = function execute_output_tester(src, input, output, callback){
 		var ir = BFF.parse(src);
-		var _output = "";
+		var _output = "", _input = (typeof input == 'string') ? input.split('').map(function(c){return c.charCodeAt(0);}) : input;
 		var interp = new BInterp(function(arr, callback){
 			_output += String.fromCharCode.apply(String, arr);
 			callback();
+		}, function(callback){
+			if(_input){
+				var __input = _input;
+				_input = null;
+				callback(__input);
+			}else callback([]);
 		});
 		interp.execute(ir, function(err){
 			if(err){
@@ -140,10 +146,18 @@ describe('BInterp', function(){
 		describe('print', function(){
 			it("should print all 256 characters correctly", function(done){
 				for(var s="", i=0; i<256; i++) s += String.fromCharCode(i);
-				_exec_out_tester(".+[.+]", s, done);
+				_exec_out_tester(".+[.+]", null, s, done);
 			});
 			it("should execute \"Hello, world!\" program correctly", function(done){
-				_exec_out_tester(files["hello-world.1.bf"], "Hello World!\n", done);
+				_exec_out_tester(files["hello-world.1.bf"], null, "Hello World!\n", done);
+			});
+		});
+		describe('input', function(){
+			it("should input values correctly", function(done){
+				_exec_out_tester(",.+.,.-.", "XyZ", "XYyx", done);
+			});
+			it("should handle EOF correctly", function(done){
+				_exec_out_tester(">,[>,]<[<]>[.>]", "Hello, world!\n", "Hello, world!\n", done);
 			});
 		});
 	});
