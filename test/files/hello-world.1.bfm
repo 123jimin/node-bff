@@ -1,3 +1,5 @@
+#include <faase>
+
 print(V) = set(0,V) .;
 print2(V1, V2) = print(V1) print(V2);
 print2('H', 'e')
