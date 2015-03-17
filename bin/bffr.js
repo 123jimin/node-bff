@@ -33,12 +33,32 @@ var source_type = (argv.srctype || file.split('.').pop()).toLowerCase();
 if(source_type != 'bfm') source_type = 'bf';
 
 var bir = null, binterp;
-var source;
+var source = fs.readFileSync(file, 'utf-8');
 var stdin;
 
 switch(cmd){
+	case 'compile':
+		var cur_type = source_type,
+			dst_type = argv.dsttype.toLowerCase();
+		switch(source_type){
+			case 'bfm':
+				bir = BFF.BMIR.parse(source);
+				break;
+			case 'bf':
+			default:
+				bir = BFF.parse(source);
+		}
+		switch(source_type){
+			case 'bfm':
+				bir = bir.toBIR();
+			case 'bf':
+				if(dst_type == 'bf'){
+					console.log(bir.toBrainFuck());
+					break;
+				}
+		}
+		break;
 	case 'run':
-		source = fs.readFileSync(file, 'utf-8');
 		switch(source_type){
 			case 'bfm':
 				bir = BFF.BMIR.parse(source).toBIR();
