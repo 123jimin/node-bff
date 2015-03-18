@@ -37,12 +37,12 @@ describe('BMIR', function(){
 	describe("parse and execute", function(){
 		describe("pointer position", function(){
 			it("should compute position of pointers correctly", function(done){
-				assert.equal(_bmf_to_bf("V=4;to(X)++to(Y)--<to(V).to(Z),"), "++>--<>>>>.<<,");
-				assert.equal(_bmf_to_bf("X=1;>>to(X)plus(4)[to(Y)plus(4)to(X)-]to(Z)."), ">><++++[<++++>-]>.");
+				assert.equal(_bmf_to_bf("V=4;to(X)++to(Y)--<to(V).to(Z),"), "++>-->>>.<<,");
+				assert.equal(_bmf_to_bf("X=1;>>to(X)plus(4)[to(Y)plus(4)to(X)-]to(Z)."), ">++++[<++++>-]>.");
 				done();
 			});
 			it("should use at() while computing position of pointers", function(done){
-				assert.equal(_bmf_to_bf("X=3;Y=7;to(Y)at(X)to(0)"), ">>>>>>><<<");
+				assert.equal(_bmf_to_bf("X=3;Y=7;to(Y)at(X)to(0)"), ">>>>");
 				done();
 			});
 		});
