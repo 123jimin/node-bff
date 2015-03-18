@@ -34,7 +34,6 @@ if(source_type != 'bfm') source_type = 'bf';
 
 var bir = null, binterp;
 var source = fs.readFileSync(file, 'utf-8');
-var stdin;
 
 switch(cmd){
 	case 'compile':
@@ -67,9 +66,38 @@ switch(cmd){
 			default:
 				bir = BFF.parse(source);
 		}
+
+		var eof = false;
+		var chunks = [];
+		var onRead = null;
+
+		process.stdin.on('data', function(chunk){
+			for(var i=0; i<chunk.length; i++) chunks.push(chunk[i]);
+			if(onRead){
+				onRead();
+			}
+		});
+
+		process.stdin.on('end', function(){
+			eof = true;
+			if(onRead){
+				onRead();
+			}
+		});
+
 		binterp = new BFF.BInterp(function(data, callback){
 			process.stdout.write(String.fromCharCode.apply(String, data));
 			callback();
+		}, function(callback){
+			if(eof){
+				callback(chunks);
+				chunks = [];
+			}
+			else onRead = function(){
+				onRead = null;
+				callback(chunks);
+				chunks = [];
+			};
 		});
 		binterp.execute(bir, function(err){
 			if(err) throw err;
